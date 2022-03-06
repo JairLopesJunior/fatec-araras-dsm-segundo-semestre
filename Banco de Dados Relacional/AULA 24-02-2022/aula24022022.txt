@@ -1,0 +1,60 @@
+AULA 24/02/2022
+
+COMANDOS UTILIZADOS:
+
+SELECT * FROM produto;
+
+SELECT *	
+FROM produto
+WHERE precodevenda > (SELECT AVG(precodevenda) FROM produto);
+
+SELECT *	
+FROM produto
+WHERE precodevenda > (SELECT MIN(precodevenda) FROM produto);
+
+SELECT *	
+FROM produto
+WHERE precodevenda > (SELECT MAX(precodevenda) FROM produto);
+
+SELECT descricao
+FROM produto
+WHERE id BETWEEN 1 AND 3;
+
+CREATE TABLE clienteaux (
+	id INTEGER NOT NULL,
+	nome VARCHAR(60) NOT NULL 
+);
+
+SELECT * FROM clienteaux;
+
+INSERT INTO clienteaux (id, nome) 
+SELECT id, nome FROM cliente;
+
+DELETE FROM clienteaux
+WHERE id IN (SELECT id FROM cliente WHERE id >= 4 AND id <= 5);
+
+SHOW CREATE TABLE cliente;
+
+SELECT * FROM cargo;
+SELECT * FROM empregado;
+
+UPDATE cargo
+SET salario = 12500
+WHERE id = 1;
+
+UPDATE empregado
+SET salario = (SELECT salario FROM cargo WHERE descricao = 'GERENTE')
+WHERE cargo = 'GERENTE';
+
+/* CONSULTAS CORRELACIONADAS */
+SELECT p.descricao
+FROM produto p
+WHERE p.id IN (SELECT i.idproduto
+				  FROM item i
+				  WHERE i.idproduto = p.id);
+				  
+SELECT p.descricao
+FROM produto p
+WHERE p.id NOT IN (SELECT i.idproduto
+				  FROM item i
+				  WHERE i.idproduto = p.id);

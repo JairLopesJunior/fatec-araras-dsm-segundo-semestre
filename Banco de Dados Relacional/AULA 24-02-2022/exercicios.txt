@@ -1,0 +1,75 @@
+1) Selecione os nomes de todos os clientes e os nomes de seus representantes.
+
+2) Selecione todas as informações do ultimo pedido.
+
+3) Selecione os pedidos com data de emissão menor que a maior data de emissão.
+
+4) Selecione o id, nome e telefone do cliente com o pedido mais antigo.
+
+5) Selecione o id, data de emissao e o total (R$) de todos os pedidos.
+
+6) Selecione todos os pedidos e descrição da forma de pagamento.
+
+
+RESOLUÇÃO:
+
+/* 1) Selecione os nomes de todos os clientes e os nomes de seus representantes. */
+
+SELECT * FROM cliente;
+SELECT * FROM representante;
+
+SELECT c.nome, r.nome
+FROM cliente c, representante r
+WHERE c.id = r.id;
+
+/* 2) Selecione todas as informações do ultimo pedido. */
+
+SELECT * FROM pedido;
+
+SELECT * FROM pedido 
+ORDER BY id DESC 
+LIMIT 1;
+
+SELECT *
+FROM pedido
+WHERE id = (SELECT MAX(id) FROM pedido);
+
+/* 3) Selecione os pedidos com data de emissão menor que a maior data de emissão. */
+
+SELECT * FROM pedido;
+
+SELECT * FROM pedido WHERE datemissao < (SELECT MAX(datemissao) FROM pedido );
+
+/* 4) Selecione o id, nome e telefone do cliente com o pedido mais antigo. */
+
+SELECT * FROM cliente;
+SELECT * FROM pedido;
+
+SELECT c.id, c.nome, c.telefone 
+FROM cliente c
+
+WHERE c.id IN (SELECT p.idcliente FROM pedido p WHERE c.id = p.idcliente)
+ORDER BY id ASC LIMIT 1;
+
+SELECT c.id, c.nome, c.telefone 
+FROM cliente c
+WHERE c.id = (SELECT MIN(idcliente) FROM pedido);
+
+/* 5) Selecione o id, data de emissao e o total (R$) de todos os pedidos. */
+
+SELECT * FROM pedido;
+SELECT * FROM item;
+
+SELECT id, datemissao, SUM(i.quantidade * i.precounitario) AS total_pedidos
+FROM pedido p, item i
+WHERE p.id = i.idpedido
+GROUP BY 1, 2;
+
+/* 6) Selecione todos os pedidos e descrição da forma de pagamento. */
+
+SELECT * FROM pedido;
+SELECT * FROM formapagto;
+
+SELECT p.*, f.descricao 
+FROM pedido p, formapagto f
+WHERE p.idformapagto = f.id;
