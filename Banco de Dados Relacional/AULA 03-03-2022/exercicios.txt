@@ -1,0 +1,14 @@
+1- Selecione todos os produtos que ainda não foram vendidos:
+
+SELECT * FROM produto;
+SELECT * FROM item;
+
+SELECT *
+FROM produto
+WHERE id NOT IN (SELECT DISTINCT(idproduto) FROM item );
+
+2- Selecione todos os produtos que foram vendidos:
+
+SELECT *
+FROM produto
+WHERE id IN (SELECT DISTINCT(idproduto) FROM item );

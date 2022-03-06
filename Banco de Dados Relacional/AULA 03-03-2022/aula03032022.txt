@@ -1,0 +1,54 @@
+Aula 03/03/2022
+
+Comandos utilizados:
+
+SELECT a.id, a.datemissao, (SELECT SUM(b.quantidade * b.precounitario)
+									 FROM item b
+									 WHERE b.idpedido = a.id) AS total,
+								   (SELECT c.descricao FROM formapagto c
+								    WHERE c.id = a.idformapagto) AS formapagto,
+								   (SELECT COUNT(*)
+									 FROM item d
+									 WHERE d.idpedido = a.id) AS QtdPedidos
+FROM pedido a;
+
+
+CREATE TABLE pedidoparcelas(
+	id INTEGER PRIMARY KEY NOT NULL,
+	idpedido INTEGER NOT NULL,
+	dataemissao DATE NOT NULL,
+	datapagto DATE,
+	valorparcela NUMERIC(10, 2) NOT NULL,
+	valorpagto NUMERIC(10, 2) NOT NULL
+);
+
+ALTER TABLE pedidoparcelas ADD CONSTRAINT fk_pedido_pedidoparcelas
+FOREIGN KEY(idpedido) REFERENCES pedido(id);
+
+INSERT INTO pedidoparcelas
+VALUES(1, 1, '2022-01-15', NULL, 100, 0);
+INSERT INTO pedidoparcelas
+VALUES(2, 1, '2022-02-15', NULL, 100, 0);
+INSERT INTO pedidoparcelas
+VALUES(3, 1, '2022-03-15', NULL, 100, 0);
+
+INSERT INTO pedidoparcelas
+VALUES(4, 2, '2022-01-20', NULL, 150, 0);
+INSERT INTO pedidoparcelas
+VALUES(5, 2, '2022-02-20', NULL, 150, 0);
+
+SELECT * FROM pedidoparcelas;
+
+SELECT SUM(valorparcela) AS totalareceber
+FROM (SELECT a.id, b.valorparcela, b.datapagto
+	   FROM `pedido` a, pedidoparcelas b
+		WHERE (a.id = b.idpedido)
+		AND (b.datapagto IS NOT NULL)
+		AND (MONTH(b.dataemissao) = 1) ) AS tabela;
+		
+/* Fazendo a baixa da 1a. parcela do pedido 1 */
+UPDATE pedidoparcelas
+SET datapagto = '2022-03-03',
+	 valorpagto = valorparcela * 1.10
+WHERE idpedido = 1
+AND dataemissao = '2022-01-15';
